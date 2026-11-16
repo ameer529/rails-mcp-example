@@ -1,0 +1,11 @@
+ENV["RAILS_ENV"] ||= "test"
+ENV["MCP_TOKEN"] = "test-token"
+require_relative "../config/environment"
+require "rails/test_help"
+
+module ActiveSupport
+  class TestCase
+    parallelize(workers: :number_of_processors)
+    fixtures :all
+  end
+end
