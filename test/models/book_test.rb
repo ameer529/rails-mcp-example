@@ -16,10 +16,10 @@ class BookTest < ActiveSupport::TestCase
     assert_equal [ "100% Rails", "Dune", "Programming Ruby" ], Book.search("r").map(&:title)
   end
 
-  test "as_tool_hash has the five keys" do
-    hash = books(:dune).as_tool_hash
-    assert_equal %i[id title author year summary], hash.keys
-    assert_equal "Dune", hash[:title]
+  test "listing and detail hashes" do
+    assert_equal %i[id title author year], books(:dune).to_listing.keys
+    assert_equal %i[id title author year summary], books(:dune).to_detail.keys
+    assert_equal "Dune", books(:dune).to_detail[:title]
   end
 
   test "title and author are required" do

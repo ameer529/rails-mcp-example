@@ -1,6 +1,6 @@
 class GetBookTool < MCP::Tool
   tool_name "get_book"
-  description "Fetch one book by id."
+  description "Fetch one book by id, including its summary."
   input_schema(
     properties: { id: { type: "integer", description: "Book id from search_books" } },
     required: [ "id" ]
@@ -11,6 +11,6 @@ class GetBookTool < MCP::Tool
     book = Book.find_by(id:)
     return MCP::Tool::Response.new([ { type: "text", text: "Book #{id} not found" } ], error: true) if book.nil?
 
-    MCP::Tool::Response.new([ { type: "text", text: book.as_tool_hash.to_json } ])
+    MCP::Tool::Response.new([ { type: "text", text: book.to_detail.to_json } ])
   end
 end

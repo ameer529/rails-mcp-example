@@ -14,17 +14,46 @@ class McpControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
+  test "bare token without the bearer scheme is rejected" do
+    post "/mcp", params: rpc("tools/list").to_json, headers: headers.merge("Authorization" => "test-token")
+
+    assert_response :unauthorized
+  end
+
+  test "scheme is case insensitive" do
+    post "/mcp", params: rpc("tools/list").to_json, headers: headers.merge("Authorization" => "bearer test-token")
+
+    assert_response :success
+  end
+
+  test "get and delete answer like the transport, not the router" do
+    get "/mcp", headers: headers
+    assert_response :method_not_allowed
+
+    delete "/mcp", headers: headers
+    assert_response :success
+  end
+
+  test "notification gets an empty 202" do
+    post "/mcp", params: { jsonrpc: "2.0", method: "notifications/initialized" }.to_json, headers: headers
+
+    assert_response :accepted
+    assert_empty response.body
+  end
+
   test "initialize returns server info" do
     post "/mcp", params: rpc("initialize", protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "test", version: "1" }).to_json, headers: headers
 
     assert_response :success
     assert_equal "rails-mcp-example", response.parsed_body.dig("result", "serverInfo", "name")
+    assert_equal [ "tools" ], response.parsed_body.dig("result", "capabilities").keys
   end
 
   test "tools/list lists both tools" do
     post "/mcp", params: rpc("tools/list").to_json, headers: headers
 
     assert_response :success
+    assert_equal "application/json", response.media_type
     assert_equal %w[get_book search_books], response.parsed_body.dig("result", "tools").map { |t| t["name"] }.sort
   end
 

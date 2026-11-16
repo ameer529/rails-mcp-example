@@ -12,7 +12,7 @@ class SearchBooksToolTest < ActiveSupport::TestCase
     assert_not response.error?
     books = JSON.parse(response.content.first[:text])["books"]
     assert_equal [ "Programming Ruby" ], books.map { |b| b["title"] }
-    assert_equal %w[id title author year summary], books.first.keys
+    assert_equal %w[id title author year], books.first.keys
   end
 
   test "returns an empty list when nothing matches" do

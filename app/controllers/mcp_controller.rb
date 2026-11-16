@@ -1,10 +1,11 @@
 class McpController < ApplicationController
   TOOLS = [ SearchBooksTool, GetBookTool ].freeze
 
+  wrap_parameters false
   before_action :authenticate
 
-  def create
-    server = MCP::Server.new(name: "rails-mcp-example", version: "1.0.0", tools: TOOLS)
+  def handle
+    server = MCP::Server.new(name: "rails-mcp-example", version: "1.0.0", tools: TOOLS, capabilities: { tools: {} })
     transport = MCP::Server::Transports::StreamableHTTPTransport.new(
       server,
       stateless: true,
@@ -14,14 +15,16 @@ class McpController < ApplicationController
     )
     status, headers, body = transport.handle_request(request)
 
-    render json: body.first, status:, headers:
+    self.status = status
+    response.headers.merge!(headers)
+    self.response_body = body
   end
 
   private
 
   def authenticate
     expected = ENV.fetch("MCP_TOKEN", "")
-    given = request.authorization.to_s.delete_prefix("Bearer ")
+    given = request.authorization.to_s[/\ABearer (.+)\z/i, 1].to_s
     return if expected.present? && ActiveSupport::SecurityUtils.secure_compare(given, expected)
 
     render json: { error: "unauthorized" }, status: :unauthorized

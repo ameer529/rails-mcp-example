@@ -6,7 +6,11 @@ class Book < ApplicationRecord
     where("title LIKE :pattern ESCAPE '\\' OR author LIKE :pattern ESCAPE '\\'", pattern: pattern).order(:title)
   }
 
-  def as_tool_hash
-    slice(:id, :title, :author, :year, :summary).symbolize_keys
+  def to_listing
+    slice(:id, :title, :author, :year).symbolize_keys
+  end
+
+  def to_detail
+    to_listing.merge(summary:)
   end
 end

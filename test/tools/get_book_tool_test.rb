@@ -10,7 +10,9 @@ class GetBookToolTest < ActiveSupport::TestCase
     response = GetBookTool.call(id: books(:dune).id, server_context: nil)
 
     assert_not response.error?
-    assert_equal "Dune", JSON.parse(response.content.first[:text])["title"]
+    book = JSON.parse(response.content.first[:text])
+    assert_equal "Dune", book["title"]
+    assert_equal %w[id title author year summary], book.keys
   end
 
   test "unknown id is an error response" do
