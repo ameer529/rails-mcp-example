@@ -1,0 +1,17 @@
+rails:
+  title: 100% Rails
+  author: Ada Lovelace
+  year: 2024
+  summary: A short guide to building web apps with Rails.
+
+ruby:
+  title: Programming Ruby
+  author: Dave Thomas
+  year: 2001
+  summary: The pickaxe book.
+
+dune:
+  title: Dune
+  author: Frank Herbert
+  year: 1965
+  summary: A desert planet and the spice that runs the universe.
