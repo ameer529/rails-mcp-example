@@ -12,5 +12,5 @@ books = [
 ]
 
 books.each do |title, author, year, summary|
-  Book.find_or_create_by!(title:, author:) { |book| book.update!(year:, summary:) }
+  Book.create_with(year:, summary:).find_or_create_by!(title:, author:)
 end
